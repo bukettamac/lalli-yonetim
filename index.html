@@ -168,6 +168,13 @@ h1,h2,h3{margin:0;font-weight:500}
 .toast{background:var(--ink);color:#fff;padding:12px 16px;border-radius:12px;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.2);max-width:340px}
 .toast.ok{background:var(--ok)}.toast.bad{background:var(--bad)}
 
+.modes{display:grid;gap:12px;margin-bottom:16px}
+.mode{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:16px 18px;cursor:pointer}
+.mode:has(input:checked){border-color:var(--ruby);background:#FFF9FA}
+.mode input{width:20px;height:20px;margin-top:3px;accent-color:var(--ruby);flex:none}
+.mode b{display:block;font-size:16px;margin-bottom:2px}
+.mode span{color:var(--muted);font-size:13.5px}
+.ol{margin:6px 0 0;padding-left:20px;line-height:1.7;font-size:14px}
 .editor{width:100%;height:calc(100vh - 150px);min-height:600px;border:1px solid var(--line);border-radius:var(--r);background:#fff}
 .note{background:var(--goldl);border:1px solid #EADBC2;border-radius:12px;padding:12px 14px;font-size:13.5px;color:var(--ink2)}
 
@@ -187,7 +194,14 @@ h1,h2,h3{margin:0;font-weight:500}
   .tbl.resp td.hide-m{display:none}
   .tbl.ord td:nth-child(6){order:2;text-align:right}.tbl.ord td:nth-child(2){order:3}.tbl.ord td:nth-child(5){order:4;justify-self:end}.tbl.ord td:nth-child(4){display:none}
   .row2{grid-template-columns:1fr}
-  .editor{height:calc(100vh - 170px)}
+  .modes{display:grid;gap:12px;margin-bottom:16px}
+.mode{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:16px 18px;cursor:pointer}
+.mode:has(input:checked){border-color:var(--ruby);background:#FFF9FA}
+.mode input{width:20px;height:20px;margin-top:3px;accent-color:var(--ruby);flex:none}
+.mode b{display:block;font-size:16px;margin-bottom:2px}
+.mode span{color:var(--muted);font-size:13.5px}
+.ol{margin:6px 0 0;padding-left:20px;line-height:1.7;font-size:14px}
+.editor{height:calc(100vh - 170px)}
 }
 @media (max-width:480px){.kpis{gap:10px}.kpi{padding:13px 14px}.kpi .v{font-size:27px}.hb{grid-template-columns:minmax(70px,110px) minmax(0,1fr) auto}}
 </style>
@@ -248,9 +262,10 @@ var IC={
   kupon:'<svg viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4V8z"/><path d="M9 15l6-6M9.5 9.5h0M14.5 14.5h0"/></svg>',
   uye:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg>',
   paylasim:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>',
+  satis:'<svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></svg>',
   icerik:'<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></svg>'
 };
-var PAGES=[['ozet','Özet'],['siparis','Siparişler'],['kupon','Kuponlar'],['uye','Üyeler'],['paylasim','Müşteri paylaşımları'],['icerik','Site içeriği']];
+var PAGES=[['ozet','Özet'],['siparis','Siparişler'],['kupon','Kuponlar'],['uye','Üyeler'],['paylasim','Müşteri paylaşımları'],['satis','Satış ve ödeme'],['icerik','Site içeriği']];
 
 var S={page:'ozet',range:'30',orders:[],coupons:[],members:[],posts:[],config:{},ofilter:'Tümü',oq:'',mq:'',mch:'Tümü',user:null};
 
@@ -300,7 +315,7 @@ async function loadPosts(){var r=await sb.from('docs').select('id,data').eq('col
 async function loadConfig(){var r=await sb.from('docs').select('data').eq('col','site').eq('id','config').maybeSingle();if(!r.error)S.config=(r.data&&r.data.data)||{};}
 async function loadAll(){$('#main').innerHTML='<div class="empty">Yükleniyor…</div>';await Promise.all([loadOrders(),loadCoupons(),loadMembers(),loadPosts(),loadConfig()]);render();}
 
-function render(){var f={ozet:pOzet,siparis:pSiparis,kupon:pKupon,uye:pUye,paylasim:pPaylasim,icerik:pIcerik}[S.page];$('#main').innerHTML=f();if(S.page==='ozet')bindChart();}
+function render(){var f={ozet:pOzet,siparis:pSiparis,kupon:pKupon,uye:pUye,paylasim:pPaylasim,satis:pSatis,icerik:pIcerik}[S.page];$('#main').innerHTML=f();if(S.page==='ozet')bindChart();}
 function top(t,sub,right){return '<div class="top"><div><h1>'+t+'</h1>'+(sub?'<p>'+sub+'</p>':'')+'</div>'+(right||'')+'</div>';}
 
 /* ---------------- ÖZET ---------------- */
@@ -512,6 +527,31 @@ document.addEventListener('click',async function(e){
   if(b.dataset.phide)posts.forEach(function(p){if(p.id===k[1])p.hidden=!p.hidden;});else posts=posts.filter(function(p){return p.id!==k[1];});
   data.posts=posts;var r=await sb.from('docs').update({data:data}).eq('col','userposts').eq('id',k[0]);
   if(r.error){toast('İşlem yapılamadı','bad');return;}toast(b.dataset.phide?'Görünürlük değişti':'Paylaşım silindi','ok');await loadPosts();render();
+});
+
+/* ---------------- SATIŞ VE ÖDEME ---------------- */
+var MODES=[['kapali','Vitrin — satış kapalı','Müşteriler ürünleri gezer, sepete ekler; “Satışlarımız çok yakında” mesajı görür ve üye olarak haber almayı seçebilir. Sipariş alınmaz.'],
+  ['siparis','Sipariş al, ödemeyi sonra iste','Müşteri teslimat bilgileriyle siparişi gönderir; kart ödemesi alınmaz. Siparişler “Ödeme bekleniyor” olarak buraya düşer; havale/EFT ya da kapıda ödeme için müşteriyle sen iletişime geçersin.'],
+  ['iyzico','Online kart ödemesi (iyzico)','Müşteri iyzico ödeme sayfasında kartla öder; ödeme onaylanınca sipariş otomatik “Hazırlanıyor” olur. Vercel’de iyzico anahtarları girilmediyse sipariş, ödemesiz olarak alınır.']];
+function pSatis(){
+  var sh=Object.assign({mode:'kapali',manualNote:''},S.config.shop||{});
+  return top('Satış ve ödeme','Sitenin satış durumunu buradan değiştir. Değişiklik kaydedildiği anda sitede geçerli olur.')+
+  '<div class="modes" role="radiogroup" aria-label="Satış durumu">'+MODES.map(function(m){return '<label class="mode"><input type="radio" name="smode" value="'+m[0]+'"'+(sh.mode===m[0]?' checked':'')+'><div><b>'+m[1]+'</b><span>'+m[2]+'</span></div></label>';}).join('')+'</div>'+
+  '<div class="card" style="margin-bottom:14px"><label class="f"><span>Sipariş sonrası müşteriye gösterilecek not</span><textarea id="s-note" maxlength="600" placeholder="Örn. Ödeme için IBAN: TR00 0000 … Alıcı: … Açıklamaya sipariş numaranı yaz.">'+esc(sh.manualNote||'')+'</textarea><small>“Sipariş al, ödemeyi sonra iste” durumunda teşekkür ekranında görünür.</small></label>'+
+  '<div style="display:flex;gap:10px;align-items:center;margin-top:14px"><button class="btn ruby" data-ssave>Kaydet</button><span class="msg" id="s-msg"></span></div></div>'+
+  '<div class="card"><h2>Online ödemeyi açmak için</h2><ol class="ol"><li>iyzico’ya üye işyeri başvurusu yap; onaylanınca panelden API ve gizli anahtarı al.</li><li>Önce test için: Vercel › lalli-store › Settings › Environment Variables’a <b>IYZICO_API_KEY</b>, <b>IYZICO_SECRET_KEY</b> ve <b>IYZICO_BASE_URL</b> = https://sandbox-api.iyzipay.com gir; yeniden yayınla.</li><li>Bu sayfada “Online kart ödemesi”ni seç, iyzico test kartlarıyla bir sipariş dene.</li><li>Her şey yolundaysa canlı anahtarları gir, <b>IYZICO_BASE_URL</b>’yi https://api.iyzipay.com yap.</li></ol></div>';
+}
+document.addEventListener('click',async function(e){
+  if(!e.target.closest('[data-ssave]'))return;
+  var b=e.target.closest('[data-ssave]'),m=$('#s-msg'),sel=$('input[name=smode]:checked');if(!sel)return;
+  b.disabled=true;m.className='msg';m.textContent='Kaydediliyor…';
+  var cur=await sb.from('docs').select('data').eq('col','site').eq('id','config').maybeSingle();
+  if(cur.error){b.disabled=false;m.className='msg bad';m.textContent='Ayarlar okunamadı.';return;}
+  var data=Object.assign({},(cur.data&&cur.data.data)||{});data.shop={mode:sel.value,manualNote:$('#s-note').value.trim()};
+  var r=await sb.from('docs').upsert({col:'site',id:'config',data:data});
+  b.disabled=false;
+  if(r.error){m.className='msg bad';m.textContent='Kaydedilemedi: '+r.error.message;return;}
+  S.config=data;m.className='msg ok';m.textContent='Kaydedildi. Sitede geçerli.';toast('Satış durumu: '+MODES.filter(function(x){return x[0]===sel.value;})[0][1],'ok');
 });
 
 /* ---------------- SİTE İÇERİĞİ ---------------- */
